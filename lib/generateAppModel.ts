@@ -23,11 +23,12 @@ import { SAMTemplate } from './types';
 
 interface ConfigLambda {
   handler: string;
-  runtime: string;
+  runtime: 'nodejs12.x';
   filename: string;
   route: string;
   method?: string;
   environment?: Record<string, string>;
+  memorySize?: number;
 }
 
 interface SendRequestPayload {
@@ -57,9 +58,16 @@ export interface SAM {
 interface Props {
   lambdas: Record<string, ConfigLambda>;
   cwd: string;
+  onData?: (data: any) => void;
+  onError?: (data: any) => void;
 }
 
-export async function generateSAM({ lambdas, cwd }: Props): Promise<SAM> {
+export async function generateSAM({
+  lambdas,
+  cwd,
+  onData,
+  onError,
+}: Props): Promise<SAM> {
   const _tmpDir = tmpDir({ unsafeCleanup: true });
   const workdir = _tmpDir.name;
   const mapping = new Map<string, string>();
@@ -90,8 +98,8 @@ export async function generateSAM({ lambdas, cwd }: Props): Promise<SAM> {
       Properties: {
         Handler: `${functionName}/${lambda.handler}`,
         Description: key,
-        Runtime: 'nodejs12.x',
-        MemorySize: 512,
+        Runtime: lambda.runtime,
+        MemorySize: lambda.memorySize ?? 128,
         Timeout: 29, // Max timeout from API Gateway
         Environment: { Variables: lambda.environment },
         Events: {
@@ -119,7 +127,10 @@ export async function generateSAM({ lambdas, cwd }: Props): Promise<SAM> {
   async function start() {
     // Get free port
     port = await getPort();
-    SAM = await createSAMLocal('api', workdir, port);
+    SAM = await createSAMLocal('api', workdir, port, {
+      onData,
+      onError,
+    });
     client = new AWSLambda({
       endpoint: `http://localhost:${port}`,
       region: 'local',

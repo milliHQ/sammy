@@ -8,6 +8,10 @@ import { spawn } from 'child_process';
 
 import { createDeferred } from './utils';
 
+interface SAMLocalOptions {
+  onData?: (data: any) => void;
+  onError?: (data: any) => void;
+}
 export interface SAMLocal {
   kill: () => void;
 }
@@ -15,7 +19,8 @@ export interface SAMLocal {
 export async function createSAMLocal(
   type: 'sdk' | 'api',
   cwd: string,
-  port: number
+  port: number,
+  options: SAMLocalOptions = {}
 ): Promise<SAMLocal> {
   const sdkSpawnArgs = [
     'local',
@@ -25,9 +30,7 @@ export async function createSAMLocal(
     '--region',
     'local',
   ];
-
   const apiSpawnArgs = ['local', 'start-api', '--port', `${port}`];
-
   const defer = createDeferred();
   let started = false;
 
@@ -49,12 +52,12 @@ export async function createSAMLocal(
 
   process.stdout?.on('data', (data) => {
     checkStart(data);
-    console.log(`[${type}]: ${data}`);
+    options.onData && options.onData(data);
   });
 
   process.stderr?.on('data', (data) => {
     checkStart(data);
-    console.log(`[${type}]: ${data}`);
+    options.onError && options.onError(data);
   });
 
   // Wait until SAM CLI is running
