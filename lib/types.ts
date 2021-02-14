@@ -31,3 +31,13 @@ export interface SAMTemplate {
     };
   };
 }
+
+export interface ConfigLambda {
+  handler: string;
+  runtime: 'nodejs12.x';
+  filename: string;
+  route: string;
+  method?: string;
+  environment?: Record<string, string>;
+  memorySize?: number;
+}

@@ -25,6 +25,8 @@ const LambdaFunctionName = 'proxy';
 interface Props {
   pathToProxyPackage: string;
   proxyConfig: string;
+  onData?: (data: any) => void;
+  onError?: (data: any) => void;
 }
 
 interface SendRequestEventProps {
@@ -42,6 +44,8 @@ export interface SAM {
 export async function generateProxySAM({
   pathToProxyPackage,
   proxyConfig,
+  onData,
+  onError,
 }: Props): Promise<SAM> {
   const _tmpDir = tmpDir({ unsafeCleanup: true });
   const workdir = _tmpDir.name;
@@ -89,7 +93,10 @@ export async function generateProxySAM({
   async function start() {
     // Initialize SAM
     port = await getPort();
-    SAM = await createSAMLocal('sdk', workdir, port);
+    SAM = await createSAMLocal('sdk', workdir, port, {
+      onData,
+      onError,
+    });
     client = new AWSLambda({
       endpoint: `http://localhost:${port}`,
       region: 'local',

@@ -6,6 +6,7 @@ import { stringify as yaml } from 'yaml';
 import getPort from 'get-port';
 import { Lambda as AWSLambda } from 'aws-sdk';
 import fetch, { Response } from 'node-fetch';
+import { APIGatewayProxyResult } from 'aws-lambda';
 
 import {
   createPayload,
@@ -13,23 +14,12 @@ import {
   unzipToLocation,
 } from './utils';
 import { createSAMLocal, SAMLocal } from './SAMLocal';
-import { APIGatewayProxyResult } from 'aws-lambda';
-import { SAMTemplate } from './types';
+import { ConfigLambda, SAMTemplate } from './types';
 
 /**
  * Wrapper that generates a serverless application model (SAM) for lambda inputs
  * https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
  */
-
-interface ConfigLambda {
-  handler: string;
-  runtime: 'nodejs12.x';
-  filename: string;
-  route: string;
-  method?: string;
-  environment?: Record<string, string>;
-  memorySize?: number;
-}
 
 interface SendRequestPayload {
   functionName: string;
