@@ -25,6 +25,7 @@ const LambdaFunctionName = 'proxy';
 interface Props {
   pathToProxyPackage: string;
   proxyConfig: string;
+  runtime?: 'nodejs12.x' | 'nodejs14.x';
   onData?: (data: any) => void;
   onError?: (data: any) => void;
 }
@@ -44,6 +45,7 @@ export interface SAM {
 export async function generateProxySAM({
   pathToProxyPackage,
   proxyConfig,
+  runtime = 'nodejs12.x',
   onData,
   onError,
 }: Props): Promise<SAM> {
@@ -70,7 +72,7 @@ export async function generateProxySAM({
     Properties: {
       Handler: `${LambdaFunctionName}/handler.handler`,
       Description: 'Lambda@Edge Proxy',
-      Runtime: 'nodejs12.x',
+      Runtime: runtime,
       MemorySize: 128,
       Timeout: 30,
     },

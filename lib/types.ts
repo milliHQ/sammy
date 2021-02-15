@@ -12,7 +12,7 @@ export interface ServerLessFunction {
   Type: 'AWS::Serverless::Function';
   Properties: {
     Handler: string;
-    Runtime: 'nodejs12.x';
+    Runtime: 'nodejs12.x' | 'nodejs14.x';
     MemorySize: number;
     Timeout: number;
     Description?: string;
@@ -34,7 +34,7 @@ export interface SAMTemplate {
 
 export interface ConfigLambda {
   handler: string;
-  runtime: 'nodejs12.x';
+  runtime: 'nodejs12.x' | 'nodejs14.x';
   filename: string;
   route: string;
   method?: string;
