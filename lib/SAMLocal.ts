@@ -9,6 +9,8 @@ import { spawn } from 'child_process';
 import { createDeferred } from './utils';
 
 interface SAMLocalOptions {
+  // https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-local-start-api.html
+  warmContainers?: 'EAGER' | 'LAZY';
   onData?: (data: any) => void;
   onError?: (data: any) => void;
 }
@@ -22,15 +24,17 @@ export async function createSAMLocal(
   port: number,
   options: SAMLocalOptions = {}
 ): Promise<SAMLocal> {
+  const {warmContainers, onData, onError} = options
   const sdkSpawnArgs = [
-    'local',
-    'start-lambda',
-    '--port',
-    `${port}`,
-    '--region',
-    'local',
+    'local', 'start-lambda',
+    '--port', `${port}`,
+    '--region', 'local',
   ];
-  const apiSpawnArgs = ['local', 'start-api', '--port', `${port}`];
+  const apiSpawnArgs = [
+    'local', 'start-api',
+    '--port', `${port}`,
+    ...(warmContainers ? ['--warm-containers',warmContainers] : []),
+  ];
   const defer = createDeferred();
   let started = false;
 
@@ -52,12 +56,12 @@ export async function createSAMLocal(
 
   process.stdout?.on('data', (data) => {
     checkStart(data);
-    options.onData && options.onData(data);
+    onData && onData(data);
   });
 
   process.stderr?.on('data', (data) => {
     checkStart(data);
-    options.onError && options.onError(data);
+    onError && onError(data);
   });
 
   // Wait until SAM CLI is running
