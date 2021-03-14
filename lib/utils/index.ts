@@ -139,4 +139,12 @@ export function normalizeCloudFrontHeaders(
   return result;
 }
 
+export const isNotEmptyString = (a: any): a is string => {
+  return typeof a === 'string' && !!a
+}
+
+export const isFinite = (a: any): a is number => {
+  return Number.isFinite(a)
+}
+
 export { Deferred, createDeferred } from './deferred';

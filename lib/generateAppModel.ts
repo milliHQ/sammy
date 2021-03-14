@@ -14,7 +14,7 @@ import {
   unzipToLocation,
 } from './utils';
 import { createSAMLocal, SAMLocal } from './SAMLocal';
-import { ConfigLambda, SAMTemplate } from './types';
+import { ConfigLambda, SAMLocalAPICLIOptions, SAMTemplate } from './types';
 
 /**
  * Wrapper that generates a serverless application model (SAM) for lambda inputs
@@ -50,6 +50,7 @@ interface Props {
   cwd: string;
   onData?: (data: any) => void;
   onError?: (data: any) => void;
+  cliOptions?: SAMLocalAPICLIOptions;
 }
 
 export async function generateSAM({
@@ -57,6 +58,7 @@ export async function generateSAM({
   cwd,
   onData,
   onError,
+  cliOptions={},
 }: Props): Promise<SAM> {
   const _tmpDir = tmpDir({ unsafeCleanup: true });
   const workdir = _tmpDir.name;
@@ -111,20 +113,21 @@ export async function generateSAM({
   fs.writeFileSync(path.join(workdir, 'template.yml'), yaml(SAMTemplate));
 
   let SAM: SAMLocal;
+  let host: string;
   let port: number;
   let client: AWSLambda;
+  let region: string;
 
   async function start() {
-    // Get free port
-    port = await getPort();
-    SAM = await createSAMLocal('api', workdir, port, {
+    port = cliOptions.port || await getPort();
+    host = cliOptions.host || '127.0.0.1'
+    region = cliOptions.region || 'local'
+    SAM = await createSAMLocal('api', workdir, {
       onData,
       onError,
+      cliOptions: { ...cliOptions, port, host, region },
     });
-    client = new AWSLambda({
-      endpoint: `http://localhost:${port}`,
-      region: 'local',
-    });
+    client = new AWSLambda({ endpoint: `http://${host}:${port}`, region });
   }
 
   async function stop() {
@@ -176,7 +179,7 @@ export async function generateSAM({
     path: string,
     { headers } = {}
   ) => {
-    return fetch(`http://localhost:${port}${path}`, { headers });
+    return fetch(`http://${host}:${port}${path}`, { headers });
   };
 
   return {
