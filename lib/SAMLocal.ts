@@ -6,35 +6,27 @@
 
 import { spawn } from 'child_process';
 
+import { getCLIOptionArgs } from './SamLocalCLIOptions';
+import { SAMLocalCLIOptions, SAMLocalType } from './types';
 import { createDeferred } from './utils';
 
-interface SAMLocalOptions {
-  // https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-local-start-api.html
-  warmContainers?: 'EAGER' | 'LAZY';
+export interface SAMLocalOptions {
   onData?: (data: any) => void;
   onError?: (data: any) => void;
+  cliOptions: SAMLocalCLIOptions;
 }
 export interface SAMLocal {
   kill: () => void;
 }
 
 export async function createSAMLocal(
-  type: 'sdk' | 'api',
+  type: SAMLocalType,
   cwd: string,
-  port: number,
-  options: SAMLocalOptions = {}
+  options: SAMLocalOptions = {cliOptions: {}},
 ): Promise<SAMLocal> {
-  const {warmContainers, onData, onError} = options
-  const sdkSpawnArgs = [
-    'local', 'start-lambda',
-    '--port', `${port}`,
-    '--region', 'local',
-  ];
-  const apiSpawnArgs = [
-    'local', 'start-api',
-    '--port', `${port}`,
-    ...(warmContainers ? ['--warm-containers',warmContainers] : []),
-  ];
+  const {onData, onError, cliOptions} = options;
+  const typeArg = type === 'sdk' ? 'start-lambda' : 'start-api';
+  const spawnArgs = ['local', typeArg, ...getCLIOptionArgs(type, cliOptions)];
   const defer = createDeferred();
   let started = false;
 
@@ -46,9 +38,7 @@ export async function createSAMLocal(
     }
   }
 
-  const process = spawn('sam', type === 'sdk' ? sdkSpawnArgs : apiSpawnArgs, {
-    cwd,
-  });
+  const process = spawn('sam', spawnArgs, { cwd });
 
   process.on('exit', () => {
     defer.resolve();

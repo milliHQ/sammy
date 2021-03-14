@@ -12,7 +12,7 @@ import getPort from 'get-port';
 import http from 'http';
 import { URL } from 'url';
 
-import { SAMTemplate } from './types';
+import { SAMLocalLambadCLIOptions, SAMTemplate } from './types';
 import { getLocalIpAddressFromHost, unzipToLocation } from './utils';
 import { createSAMLocal, SAMLocal } from './SAMLocal';
 
@@ -28,6 +28,7 @@ interface Props {
   runtime?: 'nodejs12.x' | 'nodejs14.x';
   onData?: (data: any) => void;
   onError?: (data: any) => void;
+  cliOptions?: SAMLocalLambadCLIOptions;
 }
 
 interface SendRequestEventProps {
@@ -48,6 +49,7 @@ export async function generateProxySAM({
   runtime = 'nodejs12.x',
   onData,
   onError,
+  cliOptions={},
 }: Props): Promise<SAM> {
   const _tmpDir = tmpDir({ unsafeCleanup: true });
   const workdir = _tmpDir.name;
@@ -82,8 +84,10 @@ export async function generateProxySAM({
   fs.writeFileSync(path.join(workdir, 'template.yml'), yaml(SAMTemplate));
 
   let SAM: SAMLocal;
+  let host: string;
   let port: number;
   let client: AWSLambda;
+  let region: string;
   let portProxyConfig: number;
   // Simple HTTP server to serve the proxy config
   // https://stackoverflow.com/a/44188852/831465
@@ -95,14 +99,14 @@ export async function generateProxySAM({
   async function start() {
     // Initialize SAM
     port = await getPort();
-    SAM = await createSAMLocal('sdk', workdir, port, {
+    host = cliOptions.host || '127.0.0.1'
+    region = cliOptions.region || 'local'
+    SAM = await createSAMLocal('sdk', workdir, {
       onData,
       onError,
+      cliOptions: { ...cliOptions, port, host, region },
     });
-    client = new AWSLambda({
-      endpoint: `http://localhost:${port}`,
-      region: 'local',
-    });
+    client = new AWSLambda({ endpoint: `http://${host}:${port}`, region });
 
     // Initialize Proxy Config Server
     portProxyConfig = await getPort();
