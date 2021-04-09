@@ -58,7 +58,7 @@ export async function generateSAM({
   cwd,
   onData,
   onError,
-  cliOptions={},
+  cliOptions = {},
 }: Props): Promise<SAM> {
   const _tmpDir = tmpDir({ unsafeCleanup: true });
   const workdir = _tmpDir.name;
@@ -119,9 +119,9 @@ export async function generateSAM({
   let region: string;
 
   async function start() {
-    port = cliOptions.port || await getPort();
-    host = cliOptions.host || '127.0.0.1'
-    region = cliOptions.region || 'local'
+    port = cliOptions.port || (await getPort());
+    host = cliOptions.host || '127.0.0.1';
+    region = cliOptions.region || 'local';
     SAM = await createSAMLocal('api', workdir, {
       onData,
       onError,

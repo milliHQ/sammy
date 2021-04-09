@@ -49,7 +49,7 @@ export async function generateProxySAM({
   runtime = 'nodejs12.x',
   onData,
   onError,
-  cliOptions={},
+  cliOptions = {},
 }: Props): Promise<SAM> {
   const _tmpDir = tmpDir({ unsafeCleanup: true });
   const workdir = _tmpDir.name;
@@ -99,8 +99,8 @@ export async function generateProxySAM({
   async function start() {
     // Initialize SAM
     port = await getPort();
-    host = cliOptions.host || '127.0.0.1'
-    region = cliOptions.region || 'local'
+    host = cliOptions.host || '127.0.0.1';
+    region = cliOptions.region || 'local';
     SAM = await createSAMLocal('sdk', workdir, {
       onData,
       onError,

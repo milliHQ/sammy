@@ -22,9 +22,9 @@ export interface SAMLocal {
 export async function createSAMLocal(
   type: SAMLocalType,
   cwd: string,
-  options: SAMLocalOptions = {cliOptions: {}},
+  options: SAMLocalOptions = { cliOptions: {} }
 ): Promise<SAMLocal> {
-  const {onData, onError, cliOptions} = options;
+  const { onData, onError, cliOptions } = options;
   const typeArg = type === 'sdk' ? 'start-lambda' : 'start-api';
   const spawnArgs = ['local', typeArg, ...getCLIOptionArgs(type, cliOptions)];
   const defer = createDeferred();
