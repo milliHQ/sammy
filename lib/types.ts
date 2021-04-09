@@ -16,7 +16,7 @@ export interface ServerLessFunction {
     MemorySize: number;
     Timeout: number;
     Description?: string;
-    Events?: Record<'Api', ServerLessFunctionAPIEvent>;
+    Events?: Record<string, ServerLessFunctionAPIEvent>;
     Environment?: { Variables?: Record<string, string> };
   };
 }
@@ -36,7 +36,8 @@ export interface ConfigLambda {
   handler: string;
   runtime: 'nodejs12.x' | 'nodejs14.x';
   filename: string;
-  route: string;
+  route?: string;
+  routes?: Record<string, string>;
   method?: string;
   environment?: Record<string, string>;
   memorySize?: number;
