@@ -9,7 +9,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "prettier": "prettier --write ."
+    "lint:prettier": "prettier --check .",
+    "fix:prettier": "prettier --write ."
   },
   "dependencies": {
     "aws-sdk": "^2.771.0",
