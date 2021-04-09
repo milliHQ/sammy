@@ -14,7 +14,12 @@ import {
   unzipToLocation,
 } from './utils';
 import { createSAMLocal, SAMLocal } from './SAMLocal';
-import { ConfigLambda, SAMLocalAPICLIOptions, SAMTemplate } from './types';
+import {
+  ConfigLambda,
+  SAMLocalAPICLIOptions,
+  SAMTemplate,
+  ServerLessFunctionAPIEvent,
+} from './types';
 
 /**
  * Wrapper that generates a serverless application model (SAM) for lambda inputs
@@ -85,6 +90,33 @@ export async function generateSAM({
       path.join(cwd, lambda.filename),
       path.join(workdir, functionName)
     );
+
+    const Events: Record<string, ServerLessFunctionAPIEvent> = {};
+
+    if (lambda.route) {
+      Events.Api = {
+        Type: 'HttpApi',
+        Properties: {
+          Path: lambda.route,
+          Method: lambda.method ?? 'any',
+          TimeoutInMillis: 29000, // Max timeout
+          PayloadFormatVersion: '2.0',
+        },
+      };
+    } else if (lambda.routes) {
+      for (const routeKey in lambda.routes) {
+        Events[routeKey] = {
+          Type: 'HttpApi',
+          Properties: {
+            Path: lambda.routes[routeKey],
+            Method: lambda.method ?? 'any',
+            TimeoutInMillis: 29000, // Max timeout
+            PayloadFormatVersion: '2.0',
+          },
+        };
+      }
+    }
+
     SAMTemplate.Resources[functionName] = {
       Type: 'AWS::Serverless::Function',
       Properties: {
@@ -94,17 +126,7 @@ export async function generateSAM({
         MemorySize: lambda.memorySize ?? 128,
         Timeout: 29, // Max timeout from API Gateway
         Environment: { Variables: lambda.environment },
-        Events: {
-          Api: {
-            Type: 'HttpApi',
-            Properties: {
-              Path: lambda.route,
-              Method: lambda.method ?? 'any',
-              TimeoutInMillis: 29000, // Max timeout
-              PayloadFormatVersion: '2.0',
-            },
-          },
-        },
+        Events,
       },
     };
   }
