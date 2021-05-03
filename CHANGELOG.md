@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.1 (May 03, 2021)
+
+- Return SAM endpoint on start ([#5](https://github.com/dealmore/sammy/pull/5))
+
 ## 1.6.0 (April 09, 2021)
 
 - Allows multiple routes per Lambda ([#3](https://github.com/dealmore/sammy/issues/3) [#4](https://github.com/dealmore/sammy/pull/4))
