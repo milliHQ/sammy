@@ -40,7 +40,7 @@ interface SendRequestResponse {
 }
 
 export interface SAM {
-  start: () => Promise<void>;
+  start: () => Promise<string>;
   stop: () => Promise<void>;
   sendRequest(payload: SendRequestPayload): Promise<SendRequestResponse>;
   sendApiGwRequest(
@@ -143,13 +143,16 @@ export async function generateSAM({
   async function start() {
     port = cliOptions.port || (await getPort());
     host = cliOptions.host || '127.0.0.1';
+    const endpoint = `http://${host}:${port}`;
     region = cliOptions.region || 'local';
     SAM = await createSAMLocal('api', workdir, {
       onData,
       onError,
       cliOptions: { ...cliOptions, port, host, region },
     });
-    client = new AWSLambda({ endpoint: `http://${host}:${port}`, region });
+    client = new AWSLambda({ endpoint, region });
+
+    return endpoint;
   }
 
   async function stop() {

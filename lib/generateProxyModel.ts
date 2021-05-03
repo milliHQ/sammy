@@ -36,7 +36,7 @@ interface SendRequestEventProps {
 }
 
 export interface SAM {
-  start: () => Promise<void>;
+  start: () => Promise<string>;
   stop: () => Promise<void>;
   sendRequestEvent(
     payload: SendRequestEventProps
@@ -100,13 +100,14 @@ export async function generateProxySAM({
     // Initialize SAM
     port = await getPort();
     host = cliOptions.host || '127.0.0.1';
+    const endpoint = `http://${host}:${port}`;
     region = cliOptions.region || 'local';
     SAM = await createSAMLocal('sdk', workdir, {
       onData,
       onError,
       cliOptions: { ...cliOptions, port, host, region },
     });
-    client = new AWSLambda({ endpoint: `http://${host}:${port}`, region });
+    client = new AWSLambda({ endpoint, region });
 
     // Initialize Proxy Config Server
     portProxyConfig = await getPort();
@@ -115,6 +116,8 @@ export async function generateProxySAM({
         resolve();
       })
     );
+
+    return endpoint;
   }
 
   async function stop() {
