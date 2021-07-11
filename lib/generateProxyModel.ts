@@ -15,6 +15,7 @@ import { URL } from 'url';
 import { SAMLocalLambadCLIOptions, SAMTemplate } from './types';
 import { getLocalIpAddressFromHost, unzipToLocation } from './utils';
 import { createSAMLocal, SAMLocal } from './SAMLocal';
+import { convertToCloudFrontHeaders } from './utils/convert-to-cloudfront-headers';
 
 const LambdaFunctionName = 'proxy';
 
@@ -33,6 +34,7 @@ interface Props {
 
 interface SendRequestEventProps {
   uri: string;
+  headers?: Record<string, string>;
 }
 
 export interface SAM {
@@ -132,7 +134,7 @@ export async function generateProxySAM({
     _tmpDir.removeCallback();
   }
 
-  async function sendRequestEvent({ uri }: SendRequestEventProps) {
+  async function sendRequestEvent({ uri, headers }: SendRequestEventProps) {
     // We need to parse the path and searchParams
     // URL is only allowed with urls not uris:
     // https://github.com/nodejs/node/issues/12682
@@ -158,6 +160,9 @@ export async function generateProxySAM({
             request: {
               clientIp: '203.0.113.178',
               headers: {
+                // Add custom request headers
+                ...(headers ? convertToCloudFrontHeaders(headers) : {}),
+
                 'x-forwarded-for': [
                   {
                     key: 'X-Forwarded-For',
@@ -175,18 +180,6 @@ export async function generateProxySAM({
                     key: 'Via',
                     value:
                       '2.0 2afae0d44e2540f472c0635ab62c232b.cloudfront.net (CloudFront)',
-                  },
-                ],
-                host: [
-                  {
-                    key: 'Host',
-                    value: 'example.org',
-                  },
-                ],
-                'cache-control': [
-                  {
-                    key: 'Cache-Control',
-                    value: 'no-cache, cf-no-cache',
                   },
                 ],
               },
