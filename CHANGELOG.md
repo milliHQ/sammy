@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.0 (July 11, 2021)
+
+- Adds ability to add custom request headers ([#6](https://github.com/dealmore/sammy/pull/6))
+
 ## 1.6.1 (May 03, 2021)
 
 - Return SAM endpoint on start ([#5](https://github.com/dealmore/sammy/pull/5))
