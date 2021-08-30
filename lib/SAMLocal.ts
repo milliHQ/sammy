@@ -6,7 +6,7 @@
 
 import { spawn } from 'child_process';
 
-import { getCLIOptionArgs } from './SamLocalCLIOptions';
+import { getCLIOptionArgs } from './SAMLocalCLIOptions';
 import { SAMLocalCLIOptions, SAMLocalType } from './types';
 import { createDeferred } from './utils';
 
