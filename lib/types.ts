@@ -26,7 +26,7 @@ export interface SAMTemplate {
   Transform: string[];
   Resources: Record<string, ServerLessFunction>;
   Outputs?: {
-    WebEndpoint: {
+    WebEndpoint?: {
       Value: string;
     };
   };
@@ -86,3 +86,10 @@ export interface SAMLocalAPICLIOptions extends SAMLocalCLICommonOptions {
 export type SAMLocalCLIOptions =
   | SAMLocalLambadCLIOptions
   | SAMLocalAPICLIOptions;
+
+export interface GeneratorProps {
+  lambdas: Record<string, ConfigLambda>;
+  cwd: string;
+  onData?: (data: any) => void;
+  onError?: (data: any) => void;
+}
