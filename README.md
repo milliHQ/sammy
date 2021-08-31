@@ -1,4 +1,4 @@
-# DealMore Sammy
+# Sammy
 
 A Node.js wrapper for [AWS SAM CLI](https://aws.amazon.com/serverless/sam/) for local testing of Lambda functions.
 
@@ -40,7 +40,7 @@ import { generateAPISAM } from '@dealmore/sammy';
 const lambdaSAM = await generateAPISAM({
   lambdas: {
     first: {
-      filename: 'first.zip',
+      filename: 'lambda.zip',
       handler: 'handler.handler',
       runtime: 'nodejs14.x',
       route: '/test',

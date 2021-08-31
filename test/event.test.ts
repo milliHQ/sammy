@@ -13,7 +13,6 @@ jest.setTimeout(120_000);
 describe('integration:Event', () => {
   describe('single lambda', () => {
     const functionName = 'first';
-    const route = '/test';
     let lambdaSAM: LocalSAMGenerator;
     let tmpdir: string;
 

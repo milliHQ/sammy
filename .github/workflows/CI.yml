@@ -7,6 +7,23 @@ on:
   pull_request:
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --check-files
+
+      - name: Build
+        run: yarn build
+
   test:
     runs-on: ubuntu-latest
     env:
@@ -26,7 +43,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '12'
           cache: 'yarn'
 
       - name: Install dependencies

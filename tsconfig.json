@@ -1,14 +1,8 @@
 {
+  "extends": "@tsconfig/node12/tsconfig.json",
   "compilerOptions": {
-    "target": "es2019",
-    "lib": ["es2019"],
     "outDir": "dist",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "strict": true,
-    "declaration": true,
-    "sourceMap": false,
-    "esModuleInterop": true
+    "declaration": true
   },
   "include": ["lib/**/*", "test/**/*"]
 }
