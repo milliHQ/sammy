@@ -5,8 +5,8 @@ A Node.js wrapper for [AWS SAM CLI](https://aws.amazon.com/serverless/sam/) for 
 ## Usage
 
 ```sh
-npm i -D @dealmore/sammy     # npm
-yarn add -D @dealmore/sammy  # or yarn
+npm i -D @millihq/sammy     # npm
+yarn add -D @millihq/sammy  # or yarn
 ```
 
 Assuming you have a Lambda function with the following content:
@@ -34,7 +34,7 @@ You can now start the Lambda function locally and access it through an API-Endpo
 ```ts
 import * as path from 'path';
 
-import { generateAPISAM, APISAMGenerator } from '@dealmore/sammy';
+import { generateAPISAM, APISAMGenerator } from '@millihq/sammy';
 
 const lambdaSAM = await generateAPISAM({
   lambdas: {

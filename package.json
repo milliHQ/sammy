@@ -1,11 +1,11 @@
 {
-  "name": "@dealmore/sammy",
+  "name": "@millihq/sammy",
   "version": "1.7.0",
   "main": "dist/index.js",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dealmore/sammy.git"
+    "url": "https://github.com/milliHQ/sammy.git"
   },
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
