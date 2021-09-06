@@ -25,11 +25,12 @@ class APISAMGenerator extends SAMGenerator {
 async function generateAPISAM({
   lambdas,
   cwd,
+  randomizeFunctionNames,
   onData,
   onError,
-}: GeneratorProps) {
+}: GeneratorProps): Promise<APISAMGenerator> {
   const generator = new APISAMGenerator('api');
-  generator.generateLambdas(lambdas, cwd);
+  await generator.generateLambdas(lambdas, { cwd, randomizeFunctionNames });
 
   if (onData) {
     generator.on('data', onData);

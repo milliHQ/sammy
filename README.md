@@ -34,8 +34,7 @@ You can now start the Lambda function locally and access it through an API-Endpo
 ```ts
 import * as path from 'path';
 
-import type { APISAMGenerator } from '@dealmore/sammy';
-import { generateAPISAM } from '@dealmore/sammy';
+import { generateAPISAM, APISAMGenerator } from '@dealmore/sammy';
 
 const lambdaSAM = await generateAPISAM({
   lambdas: {

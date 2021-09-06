@@ -4,7 +4,7 @@ import * as path from 'path';
 
 import rimraf from 'rimraf';
 
-import type { LocalSAMGenerator } from '../lib/index';
+import { LocalSAMGenerator } from '../lib/index';
 import { generateLocalSAM } from '../lib/index';
 import { zipFolder } from './utils';
 

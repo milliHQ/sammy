@@ -38,11 +38,12 @@ class LocalSAMGenerator extends SAMGenerator {
 async function generateLocalSAM({
   lambdas,
   cwd,
+  randomizeFunctionNames,
   onData,
   onError,
-}: GeneratorProps) {
+}: GeneratorProps): Promise<LocalSAMGenerator> {
   const generator = new LocalSAMGenerator('sdk');
-  await generator.generateLambdas(lambdas, cwd);
+  await generator.generateLambdas(lambdas, { cwd, randomizeFunctionNames });
 
   if (onData) {
     generator.on('data', onData);

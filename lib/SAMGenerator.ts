@@ -1,13 +1,13 @@
-import * as fs from 'fs';
+import { writeFileSync } from 'fs';
 import { EventEmitter } from 'events';
-import * as path from 'path';
+import { join, isAbsolute } from 'path';
 
 import getPort from 'get-port';
 import { dirSync as tmpDirSync, DirResult } from 'tmp';
 
 import { SAMTemplate } from './SAMTemplate';
 import { ConfigLambda, SAMLocalAPICLIOptions } from './types';
-import { unzipToLocation } from './utils';
+import { randomServerlessFunctionName, unzipToLocation } from './utils';
 import { createSAMLocal, SAMLocal } from './SAMLocal';
 
 type GeneratorType = 'api' | 'sdk';
@@ -19,13 +19,20 @@ type SAMInstance = {
   region: string;
 };
 
-class LoggerEmitter extends EventEmitter {}
+type GenerateLambdasOptions = {
+  cwd?: string;
+  randomizeFunctionNames?: boolean;
+};
 
 /**
  * Generator for an AWS SAM CLI instance
  */
-class SAMGenerator {
-  loggerEmitter: LoggerEmitter;
+class SAMGenerator extends EventEmitter {
+  /**
+   * Mapping of keys to the internal function name. We use internally randomized
+   * function names since AWS SAM only accepts
+   */
+  private functionNames: Map<string, string>;
   SAM?: SAMLocal;
   SAMInstance?: SAMInstance;
   template: SAMTemplate;
@@ -33,7 +40,8 @@ class SAMGenerator {
   type: GeneratorType;
 
   constructor(type: GeneratorType) {
-    this.loggerEmitter = new LoggerEmitter();
+    super();
+    this.functionNames = new Map();
     this.tmpDir = tmpDirSync({ unsafeCleanup: true });
     this.template = new SAMTemplate();
     this.type = type;
@@ -41,12 +49,12 @@ class SAMGenerator {
 
   // Explicit `this` binding
   private onData = (message: any) => {
-    this.loggerEmitter.emit('data', message);
+    this.emit('data', message);
   };
 
   // Explicit `this` binding
   private onError = (message: any) => {
-    this.loggerEmitter.emit('error', message);
+    this.emit('error', message);
   };
 
   /**
@@ -58,17 +66,24 @@ class SAMGenerator {
    */
   async generateLambdas(
     lambdas: Record<string, ConfigLambda>,
-    cwd: string = process.cwd()
+    options?: GenerateLambdasOptions
   ) {
+    const cwd = options?.cwd ?? process.cwd();
+
     // Unpack all lambdas
-    for (const [functionName, lambda] of Object.entries(lambdas)) {
-      const functionSourcePath = path.isAbsolute(lambda.filename)
+    for (const [externalFunctionName, lambda] of Object.entries(lambdas)) {
+      const functionName = options?.randomizeFunctionNames
+        ? randomServerlessFunctionName()
+        : externalFunctionName;
+      this.functionNames.set(externalFunctionName, functionName);
+
+      const functionSourcePath = isAbsolute(lambda.filename)
         ? lambda.filename
-        : path.join(cwd, lambda.filename);
+        : join(cwd, lambda.filename);
 
       await unzipToLocation(
         functionSourcePath,
-        path.join(this.tmpDir.name, functionName)
+        join(this.tmpDir.name, functionName)
       );
 
       this.template.addLambda(functionName, {
@@ -110,8 +125,8 @@ class SAMGenerator {
       }
 
       // Write the SAM template
-      fs.writeFileSync(
-        path.join(this.tmpDir.name, 'template.yml'),
+      writeFileSync(
+        join(this.tmpDir.name, 'template.yml'),
         this.template.toYaml()
       );
     }
@@ -156,21 +171,10 @@ class SAMGenerator {
   }
 
   /**
-   * Subscribe to data or error messages from the CLI
-   * @param topic
-   * @param callback
+   * Get the real functionName for the key provided at creation
    */
-  on(topic: 'data' | 'error', callback: (data: string) => void) {
-    this.loggerEmitter.on(topic, callback);
-  }
-
-  /**
-   * Unsubscribe to data or error messages from the CLI
-   * @param topic
-   * @param callback
-   */
-  off(topic: 'data' | 'error', callback: (data: string) => void) {
-    this.loggerEmitter.off(topic, callback);
+  getFunctionName(key: string) {
+    return this.functionNames.get(key);
   }
 }
 

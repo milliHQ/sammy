@@ -90,6 +90,7 @@ export type SAMLocalCLIOptions =
 export interface GeneratorProps {
   lambdas: Record<string, ConfigLambda>;
   cwd: string;
+  randomizeFunctionNames?: boolean;
   onData?: (data: any) => void;
   onError?: (data: any) => void;
 }

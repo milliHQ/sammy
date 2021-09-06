@@ -4,7 +4,7 @@ import * as path from 'path';
 
 import rimraf from 'rimraf';
 
-import type { APISAMGenerator } from '../lib/index';
+import { APISAMGenerator } from '../lib/index';
 import { generateAPISAM } from '../lib/index';
 import { zipFolder } from './utils';
 
