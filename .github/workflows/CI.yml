@@ -24,6 +24,14 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: |
+            dist/**/*
+          if-no-files-found: error
+
   test:
     runs-on: ubuntu-latest
     env:
@@ -51,3 +59,25 @@ jobs:
 
       - name: Run tests
         run: yarn test --runInBand
+
+  publishRelease:
+    name: Potentially publish release
+    runs-on: ubuntu-latest
+    needs: [build, test]
+    if: github.ref == 'refs/heads/main'
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 25
+
+      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+
+      - run: ./scripts/publish-release.sh
