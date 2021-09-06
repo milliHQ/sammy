@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.0
+
+This release is a rewrite of the internal template generator.
+It is now possible to create Lambdas that are accessible via `aws-sdk`.
+
+- Adds ability to start lambdas without API ([#7](https://github.com/milliHQ/sammy/pull/7))
+
 ## 1.7.0 (July 11, 2021)
 
 - Adds ability to add custom request headers ([#6](https://github.com/milliHQ/sammy/pull/6))
