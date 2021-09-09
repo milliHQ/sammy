@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1
+
+Republish of `v2.0.0`.
+
 ## 2.0.0
 
 This release is a rewrite of the internal template generator.
