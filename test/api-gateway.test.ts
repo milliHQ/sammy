@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import rimraf from 'rimraf';
+import { sync as rimrafSync } from 'rimraf';
 
 import { APISAMGenerator } from '../lib/index';
 import { generateAPISAM } from '../lib/index';
@@ -30,7 +30,7 @@ describe('integration:Api-Gateway', () => {
           first: {
             filename: 'first.zip',
             handler: 'handler.handler',
-            runtime: 'nodejs14.x',
+            runtime: 'nodejs16.x',
             route,
             method: 'get',
           },
@@ -48,7 +48,7 @@ describe('integration:Api-Gateway', () => {
 
     afterAll(async () => {
       await lambdaSAM.stop();
-      rimraf.sync(tmpdir);
+      rimrafSync(tmpdir);
     });
 
     test('Invoke through API Gateway', async () => {

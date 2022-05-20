@@ -1,3 +1,5 @@
+type LambdaRuntime = 'nodejs12.x' | 'nodejs14.x' | 'nodejs16.x';
+
 export interface ServerLessFunctionAPIEvent {
   Type: 'Api' | 'HttpApi';
   Properties: {
@@ -12,7 +14,7 @@ export interface ServerLessFunction {
   Type: 'AWS::Serverless::Function';
   Properties: {
     Handler: string;
-    Runtime: 'nodejs12.x' | 'nodejs14.x';
+    Runtime: LambdaRuntime;
     MemorySize: number;
     Timeout: number;
     Description?: string;
@@ -34,7 +36,7 @@ export interface SAMTemplate {
 
 export interface ConfigLambda {
   handler: string;
-  runtime: 'nodejs12.x' | 'nodejs14.x';
+  runtime: LambdaRuntime;
   filename: string;
   route?: string;
   routes?: Record<string, string>;

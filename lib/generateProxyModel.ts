@@ -1,16 +1,17 @@
-import * as path from 'path';
 import * as fs from 'fs';
-import { dirSync as tmpDir } from 'tmp';
-import { stringify as yaml } from 'yaml';
-import { Lambda as AWSLambda } from 'aws-sdk';
+import { createServer } from 'http';
+import * as path from 'path';
+import { URL } from 'url';
+
 import {
   CloudFrontRequest,
   CloudFrontRequestEvent,
   CloudFrontResultResponse,
 } from 'aws-lambda';
+import { Lambda as AWSLambda } from 'aws-sdk';
 import getPort from 'get-port';
-import http from 'http';
-import { URL } from 'url';
+import { dirSync as tmpDir } from 'tmp';
+import { stringify as yaml } from 'yaml';
 
 import { SAMLocalLambadCLIOptions, SAMTemplate } from './types';
 import { getLocalIpAddressFromHost, unzipToLocation } from './utils';
@@ -26,7 +27,7 @@ const LambdaFunctionName = 'proxy';
 interface Props {
   pathToProxyPackage: string;
   proxyConfig: string;
-  runtime?: 'nodejs12.x' | 'nodejs14.x';
+  runtime?: 'nodejs12.x' | 'nodejs14.x' | 'nodejs16.x';
   onData?: (data: any) => void;
   onError?: (data: any) => void;
   cliOptions?: SAMLocalLambadCLIOptions;
@@ -93,7 +94,7 @@ export async function generateProxySAM({
   let portProxyConfig: number;
   // Simple HTTP server to serve the proxy config
   // https://stackoverflow.com/a/44188852/831465
-  const serverProxyConfig = http.createServer((_req, res) => {
+  const serverProxyConfig = createServer((_req, res) => {
     res.writeHead(200);
     res.end(proxyConfig);
   });
