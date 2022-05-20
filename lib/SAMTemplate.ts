@@ -22,7 +22,7 @@ const defaultFunctionProperties: Pick<
   PartialServerLessFunctionProps
 > = {
   MemorySize: 128, // in mb
-  Runtime: 'nodejs14.x',
+  Runtime: 'nodejs16.x',
   Timeout: 30, // in seconds
 };
 

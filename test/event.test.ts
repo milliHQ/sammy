@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import rimraf from 'rimraf';
+import { sync as rimrafSync } from 'rimraf';
 
 import { LocalSAMGenerator } from '../lib/index';
 import { generateLocalSAM } from '../lib/index';
@@ -30,7 +30,7 @@ describe('integration:Event', () => {
           [functionName]: {
             filename: 'first.zip',
             handler: 'handler.handler',
-            runtime: 'nodejs14.x',
+            runtime: 'nodejs16.x',
           },
         },
         cwd: tmpdir,
@@ -47,7 +47,7 @@ describe('integration:Event', () => {
 
     afterAll(async () => {
       await lambdaSAM.stop();
-      rimraf.sync(tmpdir);
+      rimrafSync(tmpdir);
     });
 
     test('Invoke through AWS SDK', async () => {
