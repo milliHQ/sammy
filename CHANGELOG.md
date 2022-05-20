@@ -1,10 +1,15 @@
 # Changelog
 
-## 2.0.1
+## 3.0.0 (Mai 20, 2022)
+
+- Adds support for `nodejs16.x` Lambda runtime ([#14](https://github.com/milliHQ/sammy/pull/14))
+- Changes minimum required Node.js version from `12` to `14`
+
+## 2.0.1 (September 09, 2021)
 
 Republish of `v2.0.0`.
 
-## 2.0.0
+## 2.0.0 (September 09, 2021)
 
 This release is a rewrite of the internal template generator.
 It is now possible to create Lambdas that are accessible via `aws-sdk`.
